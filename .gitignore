@@ -1,0 +1,65 @@
+.env
+.env.local
+.env.*.local
+
+
+#  Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+ENV/
+
+
+#  Airflow
+airflow/logs/
+airflow/plugins/__pycache__/
+airflow.cfg
+airflow.db
+standalone_admin_password.txt
+
+
+#  Docker
+.docker/
+
+
+#  IDE / Editeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+
+#  Modèles NLP (trop lourds pour Git)
+*.bin
+*.pt
+*.pth
+models/
+.cache/
+
+
+#  Données sensibles
+*.csv
+*.json
+data/
+storage/data/
+
+
+#  Logs
+*.log
+logs/
+
+
+#  Power BI
+*.pbix

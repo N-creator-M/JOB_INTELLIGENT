@@ -1,0 +1,37 @@
+# ─────────────────────────────────────────────
+#  Infrastructure
+# ─────────────────────────────────────────────
+boto3
+python-dotenv
+
+# ─────────────────────────────────────────────
+#  Scraping (Bronze)
+# ─────────────────────────────────────────────
+requests
+beautifulsoup4
+lxml
+
+# ─────────────────────────────────────────────
+#  ETL / Base de données (Silver & Gold)
+# ─────────────────────────────────────────────
+sqlalchemy
+psycopg2-binary
+pandas
+numpy
+
+# ─────────────────────────────────────────────
+#  NLP & API
+# ─────────────────────────────────────────────
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2+cpu
+transformers==4.41.2
+sentence-transformers==3.0.1
+fastapi
+uvicorn
+
+# ─────────────────────────────────────────────
+#  Airflow 2.9.3 — version stable
+# ─────────────────────────────────────────────
+apache-airflow==2.9.3
+apache-airflow-providers-docker
+apache-airflow-providers-postgres
