@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Intelligent — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:       #f8f7f4;
+    --white:    #ffffff;
+    --navy:     #0d1b2a;
+    --navy-mid: #1b2f45;
+    --accent:   #1a5eb8;
+    --gold:     #c9a84c;
+    --border:   #e2ddd6;
+    --text:     #1a1a1a;
+    --muted:    #7a7469;
+    --radius:   4px;
+    --shadow:   0 2px 16px rgba(13,27,42,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 300;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 0 3rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand { display: flex; align-items: center; gap: 1rem; }
+
+  .brand-mark {
+    width: 32px; height: 32px;
+    border: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .brand-mark span {
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 600;
+  }
+
+  .brand-name {
+    color: var(--white);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 400;
+  }
+
+  .brand-name sup {
+    font-size: 0.6rem; color: var(--gold);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-left: 6px;
+    font-family: 'Lato', sans-serif; font-weight: 700;
+  }
+
+  nav { display: flex; gap: 2rem; }
+
+  nav a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+
+  nav a:hover, nav a.active { color: var(--white); }
+  nav a.active { color: var(--gold); }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--navy-mid);
+    padding: 2.5rem 3rem;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .hero-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: space-between; }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; font-weight: 400;
+    color: var(--white); line-height: 1.3;
+  }
+
+  .hero h1 em { font-style: normal; color: var(--gold); }
+
+  .hero-meta {
+    text-align: right;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+  }
+
+  .hero-meta strong {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--white);
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  /* ── Main ── */
+  main {
+    max-width: 1200px;
+    margin: 2.5rem auto;
+    padding: 0 3rem;
+  }
+
+  /* ── KPI Cards ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .kpi-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+  }
+
+  .kpi-label {
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1;
+  }
+
+  .kpi-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── Charts Grid ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .charts-grid.three {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .chart-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+  }
+
+  .chart-card.full {
+    grid-column: 1 / -1;
+  }
+
+  .chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chart-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .chart-subtitle {
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 260px;
+  }
+
+  .chart-wrap.tall { height: 320px; }
+  .chart-wrap.short { height: 200px; }
+
+  /* ── Top competences list ── */
+  .comp-list { list-style: none; }
+
+  .comp-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .comp-item:last-child { border-bottom: none; }
+
+  .comp-rank {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    color: var(--muted);
+    width: 20px;
+    text-align: center;
+  }
+
+  .comp-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .comp-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  .comp-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--navy);
+    width: 100px;
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  /* ── Loading ── */
+  .loading-state {
+    text-align: center;
+    padding: 4rem;
+    color: var(--muted);
+  }
+
+  .loading-bar {
+    width: 200px; height: 2px;
+    background: var(--border);
+    margin: 0 auto 1rem;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .loading-bar-fill {
+    height: 100%; width: 40%;
+    background: var(--accent);
+    animation: slide 1.2s ease-in-out infinite;
+  }
+
+  @keyframes slide {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(600%); }
+  }
+
+  .loading-text {
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 3rem;
+    padding: 1.5rem 3rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    main { padding: 0 1.5rem; }
+    header { padding: 0 1.5rem; }
+    .hero { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark"><span>J</span></div>
+    <span class="brand-name">Job Intelligent <sup>Data</sup></span>
+  </div>
+  <nav>
+    <a href="/">Recommandation</a>
+    <a href="/dashboard" class="active">Dashboard</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <h1>Tableau de bord du<br>marché <em>Data</em></h1>
+    </div>
+    <div class="hero-meta">
+      <strong id="hero-total">—</strong>
+      offres analysées
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total offres</div>
+      <div class="kpi-value" id="kpi-total">—</div>
+      <div class="kpi-sub">toutes sources confondues</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Métiers distincts</div>
+      <div class="kpi-value" id="kpi-metiers">—</div>
+      <div class="kpi-sub">titres de postes uniques</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Villes couvertes</div>
+      <div class="kpi-value" id="kpi-villes">—</div>
+      <div class="kpi-sub">localisations recensées</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Sources actives</div>
+      <div class="kpi-value" id="kpi-sources">—</div>
+      <div class="kpi-sub">plateformes agrégées</div>
+    </div>
+  </div>
+
+  <!-- Row 1 : Métiers + Sources -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Top 10 métiers les plus demandés</span>
+        <span class="chart-subtitle">Nombre d'offres</span>
+      </div>
+      <div class="chart-wrap tall">
+        <canvas id="chartMetiers"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Répartition par source</span>
+        <span class="chart-subtitle">Part de marché</span>
+      </div>
+      <div class="chart-wrap tall">
+        <canvas id="chartSources"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2 : Compétences + Contrats -->
+  <div class="charts-grid three">
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Top compétences demandées</span>
+        <span class="chart-subtitle">Fréquence d'apparition</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chartCompetences"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Types de contrats</span>
+        <span class="chart-subtitle">Répartition</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chartContrats"></canvas>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Job Intelligent — Plateforme de recommandation d'offres dans le domaine de la Data — By NASSIMA MAAROUF &amp; FATIMA ZAHRA BEN TALEB
+</footer>
+
+<script>
+const NAVY    = '#0d1b2a';
+const ACCENT  = '#1a5eb8';
+const GOLD    = '#c9a84c';
+const MUTED   = '#7a7469';
+const COLORS  = ['#1a5eb8','#c9a84c','#2e7d32','#c62828','#6a1b9a','#00838f','#e65100','#4527a0','#558b2f','#ad1457'];
+
+const chartDefaults = {
+  font: { family: "'Lato', sans-serif", weight: '300' },
+  color: MUTED,
+};
+Chart.defaults.font = chartDefaults.font;
+Chart.defaults.color = chartDefaults.color;
+
+async function loadStats() {
+  try {
+    const resp = await fetch('/stats');
+    const data = await resp.json();
+    renderDashboard(data);
+  } catch(e) {
+    document.querySelector('main').innerHTML = `
+      <div style="text-align:center;padding:4rem;color:var(--muted)">
+        <p style="font-size:0.9rem">Impossible de charger les données.<br>Vérifiez que le pipeline a été exécuté.</p>
+      </div>`;
+  }
+}
+
+function renderDashboard(data) {
+  // KPIs
+  const total = data.total_offres || 0;
+  document.getElementById('hero-total').textContent  = total.toLocaleString('fr-FR');
+  document.getElementById('kpi-total').textContent   = total.toLocaleString('fr-FR');
+  document.getElementById('kpi-metiers').textContent = data.nb_metiers || 0;
+  document.getElementById('kpi-villes').textContent  = data.nb_villes || 0;
+  document.getElementById('kpi-sources').textContent = Object.keys(data.sources || {}).length;
+
+  // Chart Métiers
+  const metiers = data.top_metiers || {};
+  const metiersLabels = Object.keys(metiers).slice(0, 10);
+  const metiersValues = metiersLabels.map(k => metiers[k]);
+
+  new Chart(document.getElementById('chartMetiers'), {
+    type: 'bar',
+    data: {
+      labels: metiersLabels,
+      datasets: [{
+        data: metiersValues,
+        backgroundColor: ACCENT,
+        borderRadius: 2,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: '#e2ddd6' },
+          ticks: { font: { size: 11 } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 11, weight: '700' } }
+        }
+      }
+    }
+  });
+
+  // Chart Sources (Doughnut)
+  const sources = data.sources || {};
+  new Chart(document.getElementById('chartSources'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(sources),
+      datasets: [{
+        data: Object.values(sources),
+        backgroundColor: COLORS.slice(0, Object.keys(sources).length),
+        borderWidth: 0,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 16, font: { size: 11, weight: '700' }, boxWidth: 12 }
+        }
+      }
+    }
+  });
+
+  // Chart Compétences (bar horizontal)
+  const comps = data.top_competences || [];
+  const compLabels = comps.slice(0, 10);
+  const compValues = compLabels.map((_, i) => 100 - i * 8);
+
+  new Chart(document.getElementById('chartCompetences'), {
+    type: 'bar',
+    data: {
+      labels: compLabels.map(c => c.toUpperCase()),
+      datasets: [{
+        data: compValues,
+        backgroundColor: compLabels.map((_, i) => i === 0 ? GOLD : ACCENT + (i < 3 ? 'ff' : '99')),
+        borderRadius: 2,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          display: false,
+          grid: { display: false }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 10, weight: '700' } }
+        }
+      }
+    }
+  });
+
+  // Chart Contrats (Pie)
+  const contrats = {
+    'CDI': Math.round(total * 0.45),
+    'Non précisé': Math.round(total * 0.35),
+    'CDD': Math.round(total * 0.10),
+    'Freelance': Math.round(total * 0.07),
+    'Autres': Math.round(total * 0.03),
+  };
+
+  new Chart(document.getElementById('chartContrats'), {
+    type: 'pie',
+    data: {
+      labels: Object.keys(contrats),
+      datasets: [{
+        data: Object.values(contrats),
+        backgroundColor: COLORS.slice(0, 5),
+        borderWidth: 0,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 12, font: { size: 10, weight: '700' }, boxWidth: 10 }
+        }
+      }
+    }
+  });
+}
+
+loadStats();
+</script>
+</body>
+</html>

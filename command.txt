@@ -1,0 +1,80 @@
+docker compose up -d minio
+.venv\Scripts\activate
+cd bronze
+python entrypoint.py --source france_travail
+
+
+# Démarrer tous les services
+docker compose up -d
+
+# Démarrer un service spécifique
+docker compose up -d postgres
+docker compose up -d minio
+
+# Arrêter tous les services
+docker compose down
+
+# Voir l'état des containers
+docker compose ps
+
+# Voir les logs
+docker compose logs -f
+docker compose logs -f airflow-scheduler
+
+# Redémarrer un service
+docker compose restart airflow-worker
+
+# Supprimer uniquement le volume PostgreSQL
+docker compose stop postgres
+docker compose rm -f postgres
+docker volume rm job_intelligent_postgres_data
+docker compose up -d postgres
+
+
+# Bronze — scraper toutes les sources
+python bronze/entrypoint.py --source all
+
+# Bronze — source spécifique
+python bronze/entrypoint.py --source france_travail
+python bronze/entrypoint.py --source adzuna
+python bronze/entrypoint.py --source remotive
+
+# Silver — nettoyage + NLP (sans embeddings)
+python silver/entrypoint.py --skip-embeddings
+
+# Silver — avec une date spécifique
+python silver/entrypoint.py --date 2026-04-29 --skip-embeddings
+
+# Gold — agrégation + PostgreSQL
+python gold/entrypoint.py
+
+# Gold — sans PostgreSQL
+python gold/entrypoint.py --skip-postgres
+
+
+# Lancer l'API
+uvicorn api.main:app --reload --port 8000
+
+# Accès
+# Interface web  → http://localhost:8000
+# Swagger UI     → http://localhost:8000/docs
+# Stats marché   → http://localhost:8000/stats
+# Health check   → http://localhost:8000/health
+
+
+
+**Pipeline complet en une seule fois**
+
+python bronze/entrypoint.py --source all
+python silver/entrypoint.py --skip-embeddings
+python gold/entrypoint.py
+uvicorn api.main:app --reload --port 8000
+
+
+# Connexion via Docker
+docker compose exec postgres psql -U ji_user -d gold_db
+
+# Vérifier les données
+SELECT COUNT(*) FROM gold.fait_offres;
+SELECT COUNT(*) FROM gold.dim_metier;
+SELECT COUNT(*) FROM gold.dim_localisation;

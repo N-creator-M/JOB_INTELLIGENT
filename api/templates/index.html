@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Intelligent — Recommandation d'Offres Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #f8f7f4;
+    --white:     #ffffff;
+    --navy:      #0d1b2a;
+    --navy-mid:  #1b2f45;
+    --accent:    #1a5eb8;
+    --accent-lt: #e8f0fb;
+    --gold:      #c9a84c;
+    --border:    #e2ddd6;
+    --text:      #1a1a1a;
+    --muted:     #7a7469;
+    --success:   #2e7d32;
+    --radius:    4px;
+    --shadow:    0 2px 16px rgba(13,27,42,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-weight: 300;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 0 3rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-mark span {
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .brand-name {
+    color: var(--white);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+
+  .brand-name sup {
+    font-size: 0.6rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-left: 6px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+  }
+
+  nav {
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--white); }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--navy-mid);
+    padding: 3rem 3rem 2.5rem;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--white);
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  .hero p {
+    color: rgba(255,255,255,0.55);
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+    max-width: 500px;
+  }
+
+  /* ── Main Layout ── */
+  main {
+    max-width: 1100px;
+    margin: 2.5rem auto;
+    padding: 0 3rem;
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .card-header {
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: 0.3px;
+  }
+
+  .card-header .step {
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .card-body { padding: 1.75rem; }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  .tab {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-family: 'Lato', sans-serif;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── Form elements ── */
+  label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  textarea {
+    min-height: 130px;
+    resize: vertical;
+  }
+
+  textarea:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--white);
+  }
+
+  .field { margin-bottom: 1.25rem; }
+
+  /* ── Skills tags ── */
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 0.75rem;
+    min-height: 28px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: var(--accent-lt);
+    border: 1px solid rgba(26,94,184,0.2);
+    border-radius: 2px;
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .tag:hover { background: rgba(26,94,184,0.15); }
+
+  .tag-remove {
+    font-size: 10px;
+    color: var(--accent);
+    opacity: 0.6;
+    line-height: 1;
+  }
+
+  /* ── Upload zone ── */
+  .upload-zone {
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg);
+  }
+
+  .upload-zone:hover {
+    border-color: var(--accent);
+    background: var(--accent-lt);
+  }
+
+  .upload-zone.dragover {
+    border-color: var(--accent);
+    background: var(--accent-lt);
+  }
+
+  .upload-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .upload-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .upload-file-name {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  input[type="file"] { display: none; }
+
+  /* ── Button ── */
+  .btn-primary {
+    width: 100%;
+    padding: 0.9rem;
+    margin-top: 1.5rem;
+    background: var(--navy);
+    border: none;
+    border-radius: var(--radius);
+    color: var(--white);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+  }
+
+  .btn-primary:hover { background: var(--navy-mid); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── Results panel ── */
+  .results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .results-bar h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .count-label {
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  /* ── Empty state ── */
+  .empty {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .empty-line {
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
+    margin: 0 auto 1.25rem;
+  }
+
+  .empty h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+  }
+
+  .empty p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── Loading ── */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 3rem;
+  }
+
+  .loading-bar {
+    width: 200px;
+    height: 2px;
+    background: var(--border);
+    margin: 0 auto 1rem;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .loading-bar-fill {
+    height: 100%;
+    width: 40%;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: slide 1.2s ease-in-out infinite;
+  }
+
+  @keyframes slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(600%); }
+  }
+
+  .loading p {
+    font-size: 0.78rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  /* ── Offre card ── */
+  .offre {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .offre:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+    z-index: 1;
+  }
+
+  .offre-inner {
+    padding: 1.25rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .offre-rang {
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    bottom: -1px;
+    width: 3px;
+    background: var(--gold);
+    border-radius: var(--radius) 0 0 var(--radius);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .offre:hover .offre-rang { opacity: 1; }
+
+  .offre-titre {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 3px;
+  }
+
+  .offre-entreprise {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+  }
+
+  .offre-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pill {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .pill-loc {
+    background: #f0f4f8;
+    color: var(--navy-mid);
+    border: 1px solid #dce4ed;
+  }
+
+  .pill-contrat {
+    background: #f5f5f0;
+    color: #4a4a3a;
+    border: 1px solid #e0ddd4;
+  }
+
+  .pill-remote {
+    background: #edf7ed;
+    color: var(--success);
+    border: 1px solid #c3e6c3;
+  }
+
+  .pill-salaire {
+    background: #fdf6e3;
+    color: #8a6a00;
+    border: 1px solid #e8d5a0;
+  }
+
+  .offre-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .skill {
+    font-size: 0.7rem;
+    padding: 1px 7px;
+    background: var(--accent-lt);
+    color: var(--accent);
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .match-score {
+    text-align: right;
+  }
+
+  .score-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 4rem;
+    padding: 1.5rem 3rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 800px) {
+    main { grid-template-columns: 1fr; padding: 0 1.5rem; }
+    header { padding: 0 1.5rem; }
+    .hero { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="brand">
+    <div class="brand-mark"><span>J</span></div>
+    <span class="brand-name">Job Intelligent <sup>Data</sup></span>
+  </div>
+  <nav>
+    <a href="/">Recommandation</a>
+    <a href="/dashboard">Dashboard</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1>Trouvez les offres <em>data</em><br>qui correspondent à votre profil</h1>
+    <p>Analyse sémantique de votre CV ou de vos compétences pour identifier les opportunités les plus pertinentes.</p>
+  </div>
+</div>
+
+<!-- Main -->
+<main>
+
+  <!-- Panneau profil -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <h2>Votre profil</h2>
+        <span class="step">Étape 1</span>
+      </div>
+      <div class="card-body">
+
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('skills')">Compétences</button>
+          <button class="tab" onclick="switchTab('cv')">CV complet</button>
+        </div>
+
+        <!-- Tab compétences -->
+        <div class="tab-content active" id="tab-skills">
+          <div class="field">
+            <label>Décrivez votre profil</label>
+            <textarea id="cv-text" placeholder="Je suis Data Engineer avec 4 ans d'expérience. Maîtrise de Python, Spark, AWS, dbt. Expérience en architecture de pipelines de données et MLOps..."></textarea>
+          </div>
+          <div class="field">
+            <label>Compétences clés — appuyez sur Entrée pour ajouter</label>
+            <input type="text" id="skill-input" placeholder="Ex : python, spark, aws, dbt..." onkeydown="addSkill(event)">
+            <div class="tags-container" id="tags-container"></div>
+          </div>
+        </div>
+
+        <!-- Tab CV upload -->
+        <div class="tab-content" id="tab-cv">
+          <div class="upload-zone" id="upload-zone"
+               onclick="document.getElementById('file-input').click()"
+               ondragover="onDragOver(event)"
+               ondrop="onDrop(event)">
+            <div class="upload-title">Déposez votre CV au format PDF</div>
+            <div class="upload-sub">ou cliquez pour parcourir vos fichiers</div>
+            <div class="upload-file-name" id="file-name"></div>
+          </div>
+          <input type="file" id="file-input" accept=".pdf" onchange="onFileSelect(event)">
+        </div>
+
+        <button class="btn-primary" id="btn-recommend" onclick="recommend()">
+          Analyser et recommander
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Panneau résultats -->
+  <div>
+    <div class="results-bar">
+      <h2>Offres recommandées</h2>
+      <span class="count-label" id="results-count">En attente</span>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+      <p>Analyse en cours</p>
+    </div>
+
+    <div id="results-container">
+      <div class="empty">
+        <div class="empty-line"></div>
+        <h3>Aucune analyse effectuée</h3>
+        <p>Renseignez votre profil ou importez votre CV<br>pour recevoir des recommandations personnalisées.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Job Intelligent — Plateforme de recommandation d'offres dans le domaine de la Data — By NASSIMA MAAROUF &amp; FATIMA ZAHRA BEN TALEB
+</footer>
+
+<script>
+  let skills = [];
+  let selectedFile = null;
+  let activeTab = 'skills';
+
+  function switchTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'skills') || (i === 1 && tab === 'cv'));
+    });
+    document.getElementById('tab-skills').classList.toggle('active', tab === 'skills');
+    document.getElementById('tab-cv').classList.toggle('active', tab === 'cv');
+  }
+
+  function addSkill(e) {
+    if (e.key !== 'Enter' && e.key !== ',') return;
+    e.preventDefault();
+    const val = e.target.value.trim().replace(',', '').toLowerCase();
+    if (val && !skills.includes(val)) {
+      skills.push(val);
+      renderTags();
+    }
+    e.target.value = '';
+  }
+
+  function removeSkill(skill) {
+    skills = skills.filter(s => s !== skill);
+    renderTags();
+  }
+
+  function renderTags() {
+    document.getElementById('tags-container').innerHTML = skills.map(s =>
+      `<span class="tag" onclick="removeSkill('${s}')">${s.toUpperCase()} <span class="tag-remove">x</span></span>`
+    ).join('');
+  }
+
+  function onFileSelect(e) {
+    selectedFile = e.target.files[0];
+    document.getElementById('file-name').textContent = selectedFile ? selectedFile.name : '';
+  }
+
+  function onDragOver(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.add('dragover');
+  }
+
+  function onDrop(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('dragover');
+    selectedFile = e.dataTransfer.files[0];
+    document.getElementById('file-name').textContent = selectedFile ? selectedFile.name : '';
+  }
+
+  async function recommend() {
+    const btn = document.getElementById('btn-recommend');
+    const loading = document.getElementById('loading');
+    const container = document.getElementById('results-container');
+
+    btn.disabled = true;
+    loading.style.display = 'block';
+    container.innerHTML = '';
+
+    try {
+      let data;
+
+      if (activeTab === 'cv' && selectedFile) {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        const resp = await fetch('/extract-cv', { method: 'POST', body: formData });
+        data = await resp.json();
+      } else {
+        let allSkills = [...skills];
+        const cvText = document.getElementById('cv-text').value;
+        if (cvText.trim()) {
+          const formData = new FormData();
+          formData.append('text', cvText);
+          const resp = await fetch('/extract-cv', { method: 'POST', body: formData });
+          const extracted = await resp.json();
+          allSkills = [...new Set([...allSkills, ...(extracted.skills || [])])];
+        }
+        if (!allSkills.length) {
+          showMessage('Veuillez renseigner au moins une compétence ou une description de profil.');
+          return;
+        }
+        const resp = await fetch('/recommend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ skills: allSkills, top_n: 10 }),
+        });
+        data = await resp.json();
+      }
+
+      renderResults(data);
+    } catch (e) {
+      showMessage('Erreur de connexion au serveur. Vérifiez que le service est disponible.');
+    } finally {
+      btn.disabled = false;
+      loading.style.display = 'none';
+    }
+  }
+
+  function renderResults(data) {
+    const container = document.getElementById('results-container');
+    const countEl   = document.getElementById('results-count');
+    const recs      = data.recommandations || [];
+
+    countEl.textContent = `${recs.length} résultat${recs.length !== 1 ? 's' : ''}`;
+
+    if (!recs.length) {
+      showMessage('Aucune offre correspondante trouvée. Élargissez vos critères de recherche.');
+      return;
+    }
+
+    container.innerHTML = recs.map((r, i) => `
+      <div class="offre" onclick="${r.url ? `window.open('${r.url}', '_blank')` : ''}">
+        <div class="offre-rang"></div>
+        <div class="offre-inner">
+          <div>
+            <div class="offre-titre">${r.titre || r.titre_normalise || 'Poste non précisé'}</div>
+            <div class="offre-entreprise">${r.entreprise || 'Entreprise confidentielle'}</div>
+            <div class="offre-pills">
+              ${r.localisation ? `<span class="pill pill-loc">${r.localisation}</span>` : ''}
+              ${r.contrat ? `<span class="pill pill-contrat">${r.contrat}</span>` : ''}
+              ${r.telecommande ? `<span class="pill pill-remote">Télétravail</span>` : ''}
+              ${r.salaire_min && r.salaire_min > 0 ? `<span class="pill pill-salaire">${Math.round(r.salaire_min / 1000)}k EUR</span>` : ''}
+            </div>
+            ${r.competences && r.competences.length ? `
+              <div class="offre-skills">
+                ${r.competences.slice(0, 6).map(s => `<span class="skill">${s.toUpperCase()}</span>`).join('')}
+              </div>` : ''}
+          </div>
+          <div class="match-score">
+            <div class="score-pct">${Math.round(r.score * 100)}%</div>
+            <div class="score-label">Pertinence</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function showMessage(msg) {
+    document.getElementById('results-container').innerHTML = `
+      <div class="empty">
+        <div class="empty-line"></div>
+        <h3>Aucun résultat</h3>
+        <p>${msg}</p>
+      </div>`;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('btn-recommend').disabled = false;
+    document.getElementById('results-count').textContent = '0 résultat';
+  }
+</script>
+</body>
+</html>

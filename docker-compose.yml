@@ -50,6 +50,26 @@ services:
     networks:
       - job_network
     restart: unless-stopped
+  
+  # ----------------------------------------------
+  # Redis
+  # ----------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: ji_redis
+
+    ports:
+      - "6379:6379"
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
+
+    restart: unless-stopped
+
+    networks:
+      - job_network
 
   minio:
     image: minio/minio:latest
